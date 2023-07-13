@@ -102,11 +102,6 @@ namespace Elements
                     // polygons.Add(polygon);
                     solidRep.AddFace(polygon);
                 }
-
-                // foreach (var face in sphere.Triangles)
-                // {
-                //     solidRep.AddFace(new Polygon(face.Vertices[0], face.Vertices[1], face.Vertices[2]);
-                // }
             }
 
             var consol = new ConstructedSolid(solidRep);
@@ -114,37 +109,5 @@ namespace Elements
 
             this.Representation = rep;
         }
-
-        // public override void UpdateRepresentations()
-        // {
-        //     this.Representation = new Lamina(Polygon.Rectangle(10, 10));
-        // }
-
-        // public override bool TryToGraphicsBuffers(out List<GraphicsBuffers> graphicsBuffers, out string id, out glTFLoader.Schema.MeshPrimitive.ModeEnum? mode)
-        // {
-        //     id = $"{this.Id}_Polyline";
-        //     mode = glTFLoader.Schema.MeshPrimitive.ModeEnum.LINES;
-        //     graphicsBuffers = new List<GraphicsBuffers>();
-        //     List<Vector3> points = new List<Vector3>();
-        //     List<Geometry.Vertex> vertices = new List<Geometry.Vertex>();
-        //     List<Color> colors = new List<Color>();
-        //     Color lineColor = new Color(0, 0, 0, 1);
-
-        //     foreach (var pt in Polyline.Vertices)
-        //     {
-        //         var gb = new GraphicsBuffers()
-        //         points.Add(pt);
-        //         var vert = new Geometry.Vertex(pt);
-        //         vert.Color = lineColor;
-        //         vertices.Add(vert);
-        //         colors.Add(lineColor);
-        //     }
-        //     var gbs = points.ToGraphicsBuffers();
-        //     // var gbs = vertices.ToGraphicsBuffer();
-        //     gbs.Colors.AddRange(colors.SelectMany(c => new byte[] { (byte)(c.Red * 255), (byte)(c.Green * 255), (byte)(c.Blue * 255), (byte)(c.Alpha * 255) }));
-
-        //     graphicsBuffers.Add(gbs);
-        //     return true;
-        // }
     }
 }
