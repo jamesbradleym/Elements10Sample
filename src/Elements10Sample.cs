@@ -138,67 +138,62 @@ namespace Elements10Sample
                 if (curve is Polylinework _polylinework)
                 {
                     var point = _polylinework.Polyline.PointAt(parameter);
-                    var direction = _polylinework.Polyline.Start - _polylinework.Polyline.End;
-                    var mass = new Mass(Polygon.Rectangle(size, size), size);
-                    var center = mass.Bounds.Center() + new Vector3(0, 0, size / 2.0) + mass.Transform.Origin;
-
-                    mass.Transform = new Transform(-1 * center).Concatenated(new Transform(new Plane(point, direction)));
-
+                    var direction = _polylinework.Polyline.PointAt(parameter) - _polylinework.Polyline.PointAt(parameter + directionMod);
+                    var mass = MassAtPointAndOrientation(size, point, direction);
                     output.Model.AddElement(mass);
 
-                    foreach (var segment in _polylinework.Polyline.Segments())
+                    if (_polylinework.Polyline.Segments().Count() > 1)
                     {
-                        var subpoint = segment.PointAt(0.5);
-                        var subdirection = segment.Direction();
-                        var submass = new Mass(Polygon.Rectangle(subsize, subsize), subsize);
-                        var subcenter = mass.Bounds.Center() + new Vector3(0, 0, subsize / 2.0) + submass.Transform.Origin;
-
-                        submass.Transform = new Transform(-1 * subcenter).Concatenated(new Transform(new Plane(subpoint, subdirection)));
-
-                        output.Model.AddElement(submass);
+                        foreach (var segment in _polylinework.Polyline.Segments())
+                        {
+                            var subpoint = segment.PointAt(parameter);
+                            var subdirection = segment.Direction();
+                            var submass = MassAtPointAndOrientation(subsize, subpoint, subdirection);
+                            output.Model.AddElement(submass);
+                        }
                     }
+
                 }
                 else if (curve is Linework _linework)
                 {
                     var point = _linework.Line.PointAt(parameter);
                     var direction = _linework.Line.Direction();
-                    var mass = new Mass(Polygon.Rectangle(size, size), size);
-                    var center = mass.Bounds.Center() + new Vector3(0, 0, size / 2.0) + mass.Transform.Origin;
-
-                    mass.Transform = new Transform(-1 * center).Concatenated(new Transform(new Plane(point, direction)));
-
+                    var mass = MassAtPointAndOrientation(size, point, direction);
                     output.Model.AddElement(mass);
                 }
                 else if (curve is Bezierwork _bezierwork)
                 {
                     var point = _bezierwork.Bezier.PointAt(parameter);
                     var direction = _bezierwork.Bezier.PointAt(parameter) - _bezierwork.Bezier.PointAt(parameter + directionMod);
-                    var mass = new Mass(Polygon.Rectangle(size, size), size);
-                    var center = mass.Bounds.Center() + new Vector3(0, 0, size / 2.0) + mass.Transform.Origin;
-                    mass.Transform = new Transform(-1 * center).Concatenated(new Transform(new Plane(point, direction)));
+                    var mass = MassAtPointAndOrientation(size, point, direction);
                     output.Model.AddElement(mass);
                 }
                 else if (curve is Circlework _circlework)
                 {
                     var point = _circlework.Circle.PointAt(parameter);
                     var direction = _circlework.Circle.PointAt(parameter) - _circlework.Circle.PointAt(parameter + directionMod);
-                    var mass = new Mass(Polygon.Rectangle(size, size), size);
-                    var center = mass.Bounds.Center() + new Vector3(0, 0, size / 2.0) + mass.Transform.Origin;
-                    mass.Transform = new Transform(-1 * center).Concatenated(new Transform(new Plane(point, direction)));
+                    var mass = MassAtPointAndOrientation(size, point, direction);
                     output.Model.AddElement(mass);
                 }
                 else if (curve is Arcwork _arcwork)
                 {
                     var point = _arcwork.Arc.PointAt(parameter);
                     var direction = _arcwork.Arc.PointAt(parameter) - _arcwork.Arc.PointAt(parameter + directionMod);
-                    var mass = new Mass(Polygon.Rectangle(size, size), size);
-                    var center = mass.Bounds.Center() + new Vector3(0, 0, size / 2.0) + mass.Transform.Origin;
-                    mass.Transform = new Transform(-1 * center).Concatenated(new Transform(new Plane(point, direction)));
+                    var mass = MassAtPointAndOrientation(size, point, direction);
                     output.Model.AddElement(mass);
                 }
             }
 
             return output;
+        }
+
+
+        public static Mass MassAtPointAndOrientation(Double size, Vector3 point, Vector3 direction)
+        {
+            var mass = new Mass(Polygon.Rectangle(size, size), size);
+            var center = mass.Bounds.Center() + new Vector3(0, 0, size / 2.0) + mass.Transform.Origin;
+            mass.Transform = new Transform(-1 * center).Concatenated(new Transform(new Plane(point, direction)));
+            return mass;
         }
     }
 }
