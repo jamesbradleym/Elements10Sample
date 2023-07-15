@@ -6,13 +6,13 @@ using System.Linq;
 namespace Elements10Sample
 {
 	/// <summary>
-	/// Override metadata for CurvesOverride
+	/// Override metadata for BeziersOverride
 	/// </summary>
-	public partial class CurvesOverride : IOverride
+	public partial class BeziersOverride : IOverride
 	{
-        public static string Name = "Curves";
+        public static string Name = "Beziers";
         public static string Dependency = null;
-        public static string Context = "[*discriminator=Elements.Curvework]";
+        public static string Context = "[*discriminator=Elements.Bezierwork]";
 		public static string Paradigm = "Edit";
 
         /// <summary>
@@ -28,22 +28,22 @@ namespace Elements10Sample
 		}
 
 	}
-	public static class CurvesOverrideExtensions
+	public static class BeziersOverrideExtensions
     {
 		/// <summary>
-        /// Apply Curves edit overrides to a collection of existing elements
+        /// Apply Beziers edit overrides to a collection of existing elements
         /// </summary>
-        /// <param name="overrideData">The Curves Overrides to apply</param>
+        /// <param name="overrideData">The Beziers Overrides to apply</param>
         /// <param name="existingElements">A collection of existing elements to which to apply the overrides.</param>
         /// <param name="identityMatch">A function returning a boolean which indicates whether an element is a match for an override's identity.</param>
         /// <param name="modifyElement">A function to modify a matched element, returning the modified element.</param>
         /// <typeparam name="T">The element type this override applies to. Should match the type(s) in the override's context.</typeparam>
         /// <returns>A collection of elements, including unmodified and modified elements from the supplied collection.</returns>
         public static List<T> Apply<T>(
-            this IList<CurvesOverride> overrideData,
+            this IList<BeziersOverride> overrideData,
             IEnumerable<T> existingElements,
-            Func<T, CurvesIdentity, bool> identityMatch,
-            Func<T, CurvesOverride, T> modifyElement) where T : Element
+            Func<T, BeziersIdentity, bool> identityMatch,
+            Func<T, BeziersOverride, T> modifyElement) where T : Element
         {
             var resultElements = new List<T>(existingElements);
             if (overrideData != null)
@@ -70,19 +70,19 @@ namespace Elements10Sample
         }
 
 		/// <summary>
-        /// Apply Curves edit overrides to a collection of existing elements
+        /// Apply Beziers edit overrides to a collection of existing elements
         /// </summary>
         /// <param name="existingElements">A collection of existing elements to which to apply the overrides.</param>
-        /// <param name="overrideData">The Curves Overrides to apply — typically `input.Overrides.Curves`</param>
+        /// <param name="overrideData">The Beziers Overrides to apply — typically `input.Overrides.Beziers`</param>
         /// <param name="identityMatch">A function returning a boolean which indicates whether an element is a match for an override's identity.</param>
         /// <param name="modifyElement">A function to modify a matched element, returning the modified element.</param>
         /// <typeparam name="T">The element type this override applies to. Should match the type(s) in the override's context.</typeparam>
         /// <returns>A collection of elements, including unmodified and modified elements from the supplied collection.</returns>
         public static void ApplyOverrides<T>(
             this List<T> existingElements,
-            IList<CurvesOverride> overrideData,
-            Func<T, CurvesIdentity, bool> identityMatch,
-            Func<T, CurvesOverride, T> modifyElement
+            IList<BeziersOverride> overrideData,
+            Func<T, BeziersIdentity, bool> identityMatch,
+            Func<T, BeziersOverride, T> modifyElement
             ) where T : Element
         {
             var updatedElements = overrideData.Apply(existingElements, identityMatch, modifyElement);
@@ -93,20 +93,20 @@ namespace Elements10Sample
 		/// <summary>
         /// Create elements from add/removeoverrides, and apply any edits. 
         /// </summary>
-        /// <param name="edits">The collection of edit overrides (Overrides.Curves)</param>
-        /// <param name="additions">The collection of add overrides (Overrides.Additions.Curves)</param>
-        /// <param name="removals">The collection of remove overrides (Overrides.Removals.Curves)</param>        /// <param name="identityMatch">A function returning a boolean which indicates whether an element is a match for an override's identity.</param>
+        /// <param name="edits">The collection of edit overrides (Overrides.Beziers)</param>
+        /// <param name="additions">The collection of add overrides (Overrides.Additions.Beziers)</param>
+        /// <param name="removals">The collection of remove overrides (Overrides.Removals.Beziers)</param>        /// <param name="identityMatch">A function returning a boolean which indicates whether an element is a match for an override's identity.</param>
         /// <param name="createElement">A function to create a new element, returning the created element.</param>
         /// <param name="modifyElement">A function to modify a matched element, returning the modified element.</param>
         /// <param name="existingElements">An optional collection of existing elements to which to apply any edit overrides, or remove if remove overrides are found.</param>
         /// <typeparam name="T">The element type this override applies to. Should match the type(s) in the override's context.</typeparam>
         /// <returns>A collection of elements, including new, unmodified, and modified elements from the supplied collection.</returns>
         public static List<T> CreateElements<T>(
-            this IList<CurvesOverride> edits,
-            IList<CurvesOverrideAddition> additions,
-            IList<CurvesOverrideRemoval> removals,            Func<CurvesOverrideAddition, T> createElement,
-            Func<T, CurvesIdentity, bool> identityMatch,
-            Func<T, CurvesOverride, T> modifyElement,
+            this IList<BeziersOverride> edits,
+            IList<BeziersOverrideAddition> additions,
+            IList<BeziersOverrideRemoval> removals,            Func<BeziersOverrideAddition, T> createElement,
+            Func<T, BeziersIdentity, bool> identityMatch,
+            Func<T, BeziersOverride, T> modifyElement,
             IEnumerable<T> existingElements = null
             ) where T : Element
         {

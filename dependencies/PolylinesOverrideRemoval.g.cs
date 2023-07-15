@@ -6,13 +6,13 @@ using System.Linq;
 namespace Elements10Sample
 {
 	/// <summary>
-	/// Override metadata for CurvesOverrideRemoval
+	/// Override metadata for PolylinesOverrideRemoval
 	/// </summary>
-	public partial class CurvesOverrideRemoval : IOverride
+	public partial class PolylinesOverrideRemoval : IOverride
 	{
-        public static string Name = "Curves Removal";
+        public static string Name = "Polylines Removal";
         public static string Dependency = null;
-        public static string Context = "[*discriminator=Elements.Curvework]";
+        public static string Context = "[*discriminator=Elements.Polylinework]";
 		public static string Paradigm = "Edit";
 
         /// <summary>

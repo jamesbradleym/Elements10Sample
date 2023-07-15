@@ -5,33 +5,36 @@ using Newtonsoft.Json;
 
 namespace Elements
 {
-    public class Linework : GeometricElement
+    public class Bezierwork : GeometricElement
     {
 
-        public Line Line { get; set; }
+        public Bezier Bezier { get; set; }
         [JsonProperty("Add Id")]
         public string AddId { get; set; }
 
-        public Linework(LinesOverrideAddition add)
+        public Bezierwork(BeziersOverrideAddition add)
         {
-            this.Line = add.Value.Line;
+            this.Bezier = new Bezier(add.Value.Polyline.Vertices.ToList());
             this.AddId = add.Id;
 
             SetMaterial();
         }
-        public Linework(Line line)
+
+        public Bezierwork(Bezier bezier)
         {
-            Line = line;
+            Bezier = bezier;
+            this.AddId = this.Id.ToString();
             SetMaterial();
         }
-        public bool Match(LinesIdentity identity)
+
+        public bool Match(BeziersIdentity identity)
         {
             return identity.AddId == this.AddId;
         }
 
-        public Linework Update(LinesOverride edit)
+        public Bezierwork Update(BeziersOverride edit)
         {
-            this.Line = edit.Value.Line;
+            this.Bezier = new Bezier(edit.Value.Polyline.Vertices.ToList());
             return this;
         }
 
@@ -53,26 +56,25 @@ namespace Elements
             // Define parameters for the extruded circle and spherical point
             var circleRadius = 0.1;
             var pointRadius = 0.2;
+            var innerPointRadius = 0.05;
 
+            // Create an sweep along the curve with a circular profile
+            var circle = new Circle(circleRadius).ToPolygon();
 
-            var lineVertices = new List<Vector3>() { Line.Start, Line.End };
-            // Create an extruded circle along each line segment of the polyline
+            try
+            {
+                // Create an extruded circle along the line segment
+                var sweep = new Sweep(circle, Bezier, 0, 0, 0, false);
 
-            var direction = Line.Direction();
-            var length = Line.Length();
-
-            var circle = Polygon.Circle(circleRadius, 10);
-            circle.Transform(new Transform(new Plane(Line.Start, direction)));
-
-            // Create an extruded circle along the line segment
-            var extrusion = new Extrude(circle, length, direction, false);
-
-            rep.SolidOperations.Add(extrusion);
+                rep.SolidOperations.Add(sweep);
+            }
+            catch { }
 
             // Add a spherical point at each vertex of the polyline
-            foreach (var vertex in lineVertices)
+            for (int i = 0; i < Bezier.ControlPoints.Count; i++)
             {
-                var sphere = Mesh.Sphere(pointRadius, 10);
+                var vertex = Bezier.ControlPoints[i];
+                var sphere = Mesh.Sphere((i == 0 || i == Bezier.ControlPoints.Count - 1) ? pointRadius : innerPointRadius, 10);
 
                 HashSet<Geometry.Vertex> modifiedVertices = new HashSet<Geometry.Vertex>();
                 // Translate the vertices of the mesh to center it at the origin
@@ -84,8 +86,6 @@ namespace Elements
                         modifiedVertices.Add(svertex);
                     }
                 }
-
-                // List<Polygon> polygons = new List<Polygon>();
 
                 foreach (var triangle in sphere.Triangles)
                 {
@@ -101,6 +101,7 @@ namespace Elements
                     // Create a Polygon from the triangle's vertices
                     var polygon = new Polygon(vertices);
 
+                    // polygons.Add(polygon);
                     solidRep.AddFace(polygon);
                 }
             }

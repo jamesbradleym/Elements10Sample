@@ -5,37 +5,35 @@ using Newtonsoft.Json;
 
 namespace Elements
 {
-    public class Curvework : GeometricElement
+    public class Circlework : GeometricElement
     {
 
-        public Bezier Bezier { get; set; }
+        public Circle Circle { get; set; }
         [JsonProperty("Add Id")]
         public string AddId { get; set; }
 
-        public Curvework(CurvesOverrideAddition add)
-        {
-            this.Bezier = new Bezier(add.Value.Polyline.Vertices.ToList());
-            this.AddId = add.Id;
+        // public Circlework(CirclesOverrideAddition add)
+        // {
+        //     this.Circle = add.Value.Circle;
+        //     this.AddId = add.Id;
 
+        //     SetMaterial();
+        // }
+        public Circlework(Circle circle)
+        {
+            Circle = circle;
             SetMaterial();
         }
+        // public bool Match(CirclesIdentity identity)
+        // {
+        //     return identity.AddId == this.AddId;
+        // }
 
-        public Curvework(Bezier bezier)
-        {
-            Bezier = bezier;
-            SetMaterial();
-        }
-
-        public bool Match(CurvesIdentity identity)
-        {
-            return identity.AddId == this.AddId;
-        }
-
-        public Curvework Update(CurvesOverride edit)
-        {
-            this.Bezier = new Bezier(edit.Value.Polyline.Vertices.ToList());
-            return this;
-        }
+        // public Circlework Update(CirclesOverride edit)
+        // {
+        //     this.Circle = edit.Value.Circle;
+        //     return this;
+        // }
 
         public void SetMaterial()
         {
@@ -52,30 +50,26 @@ namespace Elements
             var rep = new Representation();
             var solidRep = new Solid();
 
-            // Define parameters for the extruded circle and spherical point
+            // Define parameters for the 3D circlework and spherical point
             var circleRadius = 0.1;
             var pointRadius = 0.2;
-            var innerPointRadius = 0.05;
 
-            // Create an extruded circle along each line segment of the polyline
+            var circleVertices = new List<Vector3>() { Circle.PointAt(0) };
 
-            var start = Bezier.ControlPoints.FirstOrDefault();
-            var end = Bezier.ControlPoints.LastOrDefault();
-            var length = Bezier.Length();
-            var direction = start - Bezier.ControlPoints[1].Unitized() + new Vector3(0.01, 0.01, 0.01);
+            var direction = Circle.PointAt(0) - Circle.PointAt(0.1);
+            var length = Math.PI * Math.Pow(Circle.Radius, 2);
 
             var circle = Polygon.Circle(circleRadius, 10);
 
-            // Create an extruded circle along the line segment
-            var sweep = new Sweep(circle, Bezier, 1, 1, 1, false);
+            // Create an swept circle along the circle
+            var sweep = new Sweep(circle, Circle, 0, 0, 0, false);
 
             rep.SolidOperations.Add(sweep);
 
-            // Add a spherical point at each vertex of the polyline
-            for (int i = 0; i < Bezier.ControlPoints.Count; i++)
+            // Add a spherical point at each specified point of the Circle
+            foreach (var vertex in circleVertices)
             {
-                var vertex = Bezier.ControlPoints[i];
-                var sphere = Mesh.Sphere((i == 0 || i == Bezier.ControlPoints.Count) ? pointRadius : innerPointRadius, 10);
+                var sphere = Mesh.Sphere(pointRadius, 10);
 
                 HashSet<Geometry.Vertex> modifiedVertices = new HashSet<Geometry.Vertex>();
                 // Translate the vertices of the mesh to center it at the origin
@@ -87,8 +81,6 @@ namespace Elements
                         modifiedVertices.Add(svertex);
                     }
                 }
-
-                // List<Polygon> polygons = new List<Polygon>();
 
                 foreach (var triangle in sphere.Triangles)
                 {
@@ -104,7 +96,6 @@ namespace Elements
                     // Create a Polygon from the triangle's vertices
                     var polygon = new Polygon(vertices);
 
-                    // polygons.Add(polygon);
                     solidRep.AddFace(polygon);
                 }
             }
